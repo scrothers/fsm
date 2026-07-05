@@ -26,7 +26,7 @@ class FakeSocket:
         body = data[12:-2].decode()
         if packet_type == rcon._AUTH:
             ok_id = request_id if body == self.password else -1
-            self.out += rcon._pack(ok_id, rcon._AUTH_RESPONSE, "")
+            self.out += rcon._pack(ok_id, 2, "")  # SERVERDATA_AUTH_RESPONSE
         elif packet_type == rcon._EXEC:
             if self.split:
                 self.out += rcon._pack(request_id, rcon._RESPONSE_VALUE, "part1;")

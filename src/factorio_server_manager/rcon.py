@@ -18,7 +18,6 @@ from . import paths
 _AUTH = 3
 _EXEC = 2
 _RESPONSE_VALUE = 0
-_AUTH_RESPONSE = 2
 
 DEFAULT_TIMEOUT = 10
 

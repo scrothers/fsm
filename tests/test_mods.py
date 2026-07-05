@@ -111,7 +111,7 @@ def test_cached_versions_sorted(fhome):
 
 
 def test_sync_instance_skips_builtins_and_pinned(fhome, monkeypatch):
-    monkeypatch.setattr(mods, "fetch_mod_info", lambda name: _info(name))
+    monkeypatch.setattr(mods, "fetch_mod_info", _info)
     monkeypatch.setattr(
         mods,
         "ensure_cached",

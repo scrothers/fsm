@@ -8,6 +8,7 @@ pin a specific version.
 from __future__ import annotations
 
 import json
+import os
 import tarfile
 import tempfile
 from pathlib import Path
@@ -88,10 +89,10 @@ def _safe_extract(tar: tarfile.TarFile, dest: Path) -> None:
     if hasattr(tarfile, "data_filter"):
         tar.extractall(dest, filter="data")
         return
-    dest = dest.resolve()
+    dest_root = os.path.realpath(dest)
     for member in tar.getmembers():
-        target = (dest / member.name).resolve()
-        if target != dest and dest not in target.parents:
+        target = os.path.realpath(os.path.join(dest_root, member.name))
+        if target != dest_root and not target.startswith(dest_root + os.sep):
             raise BinaryError(f"unsafe path in archive: {member.name}")
     tar.extractall(dest)  # noqa: S202 - members validated above
 
