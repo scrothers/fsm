@@ -594,6 +594,8 @@ survive logout and start on boot.
 - **Downloads** are SHA-1 verified (mods) and fetched over HTTPS from first-party
   hosts with an explicit User-Agent.
 
+To report a vulnerability, see [SECURITY.md](SECURITY.md).
+
 ---
 
 ## Development
