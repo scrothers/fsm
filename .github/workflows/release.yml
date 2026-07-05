@@ -1,8 +1,9 @@
 name: Release
 
-# Publishes to PyPI when a version tag (vX.Y.Z) is pushed, via PyPI Trusted
-# Publishing (OIDC) — no API token is stored. Configure the trusted publisher
-# once at https://pypi.org/manage/project/factorio-server-manager/settings/publishing/
+# On a version tag (vX.Y.Z): build, publish to PyPI via Trusted Publishing
+# (OIDC, no stored token), then create a GitHub Release with the CHANGELOG notes
+# and the built artifacts attached. Configure the PyPI trusted publisher once at
+# https://pypi.org/manage/project/factorio-server-manager/settings/publishing/
 # with owner "scrothers", repo "fsm", workflow "release.yml", environment "pypi".
 
 on:
@@ -11,6 +12,7 @@ on:
 
 jobs:
   publish:
+    name: Publish to PyPI
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -28,3 +30,40 @@ jobs:
           python -m build
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  github-release:
+    name: GitHub Release
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # required to create the release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Extract release notes from CHANGELOG
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v v="$version" '
+            $0 ~ "^## \\[" v "\\]" { f = 1; next }
+            /^## \[/ && f { exit }
+            f { print }
+          ' CHANGELOG.md > RELEASE_NOTES.md
+          echo "----- notes -----"; cat RELEASE_NOTES.md
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -s RELEASE_NOTES.md ]; then
+            gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" \
+              --notes-file RELEASE_NOTES.md dist/*
+          else
+            gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" \
+              --generate-notes dist/*
+          fi

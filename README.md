@@ -1,5 +1,10 @@
 # Factorio Server Manager
 
+[![PyPI](https://img.shields.io/pypi/v/factorio-server-manager.svg)](https://pypi.org/project/factorio-server-manager/)
+[![Python](https://img.shields.io/pypi/pyversions/factorio-server-manager.svg)](https://pypi.org/project/factorio-server-manager/)
+[![CI](https://github.com/scrothers/fsm/actions/workflows/ci.yml/badge.svg)](https://github.com/scrothers/fsm/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
+
 Manage multiple isolated Factorio headless servers on one host under systemd
 user template units. One shared binary pool, many instances, each assembled from
 a single YAML file. Every game build and every mod version ever downloaded is
