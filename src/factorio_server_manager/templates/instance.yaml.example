@@ -1,0 +1,166 @@
+# =============================================================================
+# Factorio instance configuration  (instances/<name>/instance.yaml)
+#
+# This file is the single source of truth for one server. Deploy it, then run
+#   fsm instance assemble <name>
+# to materialize the instance (config.ini, server-settings.json, access lists,
+# mod links, runtime facts, systemd drop-in). Re-run assemble after any change,
+# then restart the instance. Assembly never overwrites an existing save.
+#
+# The directory name is authoritative; the `name:` field below is ignored.
+# Every value shown is either the default or a representative example.
+# =============================================================================
+
+name: main                       # cosmetic only; the directory name wins
+
+# -----------------------------------------------------------------------------
+# Core
+# -----------------------------------------------------------------------------
+
+# Which game build to run. A channel name is resolved to a concrete build AT
+# ASSEMBLE TIME (so a save never silently jumps versions; re-assemble to adopt a
+# newer build). Channels: current | stable | experimental | latest. Or pin a
+# concrete version like "2.1.9" (it must already be installed in the pool).
+game_version: current
+
+# UDP port this server listens on. Must be unique across instances (assemble
+# warns on a conflict).
+port: 34197
+
+# Save file inside the instance's saves/ directory. Seeded from the default
+# world (worlds/world.zip) on first assemble, or generate one with
+# `fsm instance create-map <name>` (see the map section at the bottom).
+save: world.zip
+
+# -----------------------------------------------------------------------------
+# Multiplayer server settings  ->  server-settings.json
+#
+# This block is deep-merged over the defaults shown below. `username`/`token`
+# are injected from secrets/credentials.json (needed for a public listing).
+# `admins` is split out into server-adminlist.json (passed via
+# --server-adminlist), not stored in server-settings.json.
+# -----------------------------------------------------------------------------
+server_settings:
+  name: "Server Main"                 # server name shown in the browser
+  description: "Factorio multiplayer server"
+  tags: []                            # search tags, e.g. ["vanilla", "pvp"]
+  visibility:
+    public: true                      # list on the public matchmaking server
+    lan: true                         # announce on the LAN
+  game_password: ""                   # empty = no password
+  max_players: 0                      # 0 = unlimited
+  admins:                             # -> server-adminlist.json
+    - your-factorio-username
+
+  # --- Access / moderation defaults ---
+  require_user_verification: true     # require factorio.com-authenticated users
+  allow_commands: admins-only         # true | false | admins-only
+  auto_pause: true                    # pause when no players are connected
+  only_admins_can_pause_the_game: true
+  afk_autokick_interval: 0            # minutes; 0 = never kick idle players
+
+  # --- Autosave (see also performance.non_blocking_saving) ---
+  autosave_interval: 10               # minutes between autosaves
+  autosave_slots: 5                   # rotating autosave files
+  autosave_only_on_server: true       # don't make clients autosave
+
+  # --- Network / bandwidth ---
+  max_upload_in_kilobytes_per_second: 0   # 0 = unlimited (cap to protect UPS)
+  max_upload_slots: 5                     # concurrent map-download slots
+  # max_heartbeats_per_second: 60         # network tick rate
+  # minimum_latency_in_ticks: 0           # forced latency (latency hiding)
+
+# -----------------------------------------------------------------------------
+# Mods  ->  mods/ (symlinks into the shared cache) + mod-list.json
+#
+# No version  -> tracks the latest release for this game build (updated by the
+#                pre-run `fsm mods update` before each start).
+# version: X  -> pinned exactly; never auto-updated.
+# Required dependencies are resolved and installed automatically. Built-ins
+# (base, space-age, elevated-rails, quality) are recognized and never fetched.
+# -----------------------------------------------------------------------------
+mods:
+  - name: even-distribution
+  - name: FNEI
+    version: 0.4.1
+
+# -----------------------------------------------------------------------------
+# Remote console (RCON)  ->  --rcon-port / --rcon-password
+#
+# Enables `fsm rcon <name> "/players"` etc. Bound to localhost. Omit to disable.
+# -----------------------------------------------------------------------------
+rcon:
+  port: 27015
+  password: "change-me"
+
+# -----------------------------------------------------------------------------
+# Access control (optional)
+# -----------------------------------------------------------------------------
+
+# Only these usernames may connect. Non-empty writes server-whitelist.json and
+# passes --server-whitelist --use-server-whitelist. Omit/empty = allow everyone.
+# whitelist:
+#   - alice
+#   - bob
+
+# Banned usernames -> server-banlist.json (--server-banlist).
+# banlist:
+#   - griefer123
+
+# -----------------------------------------------------------------------------
+# Extra command-line flags (optional)
+#
+# Escape hatch: any additional factorio flags, appended verbatim as separate
+# argv tokens (no shell). Use for anything without a first-class field.
+# -----------------------------------------------------------------------------
+# extra_args:
+#   - "--bind"
+#   - "0.0.0.0"
+
+# -----------------------------------------------------------------------------
+# Performance
+#
+# non_blocking_saving (default true) is the background / threaded / non-blocking
+# save: a forked child writes the save while the sim keeps running, so autosaves
+# never stall the game. It is written to BOTH config.ini and server-settings.json
+# so the engine honors it either way. There is no thread-count setting in
+# Factorio (the engine auto-multithreads); use cpu_affinity to steer cores.
+#
+# The remaining keys render to a systemd resource drop-in for this instance
+# (~/.config/systemd/user/factorio@<name>.service.d/performance.conf) on assemble.
+# Removing them clears the drop-in.
+# -----------------------------------------------------------------------------
+performance:
+  non_blocking_saving: true
+  # cpu_affinity: "2-7"     # -> CPUAffinity: pin to cores 2..7 (unprivileged)
+  # nice: 5                 # -> Nice: priority (positive unprivileged; negative needs privilege)
+  # cpu_weight: 200         # -> CPUWeight: cgroup share (needs cpu controller delegation)
+  # io_weight: 200          # -> IOWeight: cgroup share (needs io controller delegation)
+  # memory_high: "6G"       # -> MemoryHigh: soft memory limit
+  # memory_max: "8G"        # -> MemoryMax: hard memory limit
+
+# -----------------------------------------------------------------------------
+# Raw config.ini passthrough (optional)
+#
+# Set any config.ini key as section -> {key: value}. Merged over the generated
+# [path]/[other]. Booleans render as true/false. Use for engine settings without
+# a first-class field.
+# -----------------------------------------------------------------------------
+# config_ini:
+#   other:
+#     enable-new-mod-download: false
+
+# -----------------------------------------------------------------------------
+# Map generation (optional)  ->  used by `fsm instance create-map <name>`
+#
+# If set, create-map writes map-gen-settings.json / map-settings.json and
+# generates saves/<save>. Omit to supply a prebuilt world.zip instead. See
+# Factorio's data/base/map-gen-settings.example.json for the full schema.
+# -----------------------------------------------------------------------------
+# seed: 123456789
+# map_gen_settings:
+#   width: 0                # 0 = infinite
+#   autoplace_controls:
+#     coal: { frequency: 1, size: 1, richness: 1 }
+# map_settings:
+#   pollution: { enabled: true }

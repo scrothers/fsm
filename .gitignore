@@ -1,0 +1,138 @@
+# ---------------------------------------------------------------------------
+# Project secrets and state (never commit; only .example / .gitkeep are tracked)
+# ---------------------------------------------------------------------------
+# Factorio account credentials and any other secret files.
+secrets/*
+!secrets/*.example
+!secrets/.gitkeep
+
+# Default seed world(s) and any other world blobs.
+worlds/*
+!worlds/.gitkeep
+
+# Authored instance configs carry game/RCON passwords; track only the .example.
+instances/*/instance.yaml
+
+# Generated instance artifacts (in case FACTORIO_HOME points at the repo).
+instances/*/config.ini
+instances/*/instance.json
+instances/*/server-*.json
+instances/*/map-*.json
+instances/*/mods/
+instances/*/saves/
+instances/*/backups/
+
+# Local destination for `fsm-deploy --pull-saves`.
+/saves-pull/
+
+# ---------------------------------------------------------------------------
+# Python: bytecode and caches
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ---------------------------------------------------------------------------
+# Python: packaging / build artifacts
+# ---------------------------------------------------------------------------
+build/
+dist/
+sdist/
+wheels/
+*.egg
+*.egg-info/
+.eggs/
+MANIFEST
+pip-wheel-metadata/
+share/python-wheels/
+
+# ---------------------------------------------------------------------------
+# Virtual environments
+# ---------------------------------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# ---------------------------------------------------------------------------
+# Testing / coverage
+# ---------------------------------------------------------------------------
+.pytest_cache/
+.cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+nosetests.xml
+junit*.xml
+
+# ---------------------------------------------------------------------------
+# Type checkers / linters
+# ---------------------------------------------------------------------------
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+
+# ---------------------------------------------------------------------------
+# Jupyter
+# ---------------------------------------------------------------------------
+.ipynb_checkpoints/
+
+# ---------------------------------------------------------------------------
+# Environment / direnv
+# ---------------------------------------------------------------------------
+.env
+.env.*
+*.env
+.direnv/
+
+# ---------------------------------------------------------------------------
+# Editors / IDEs
+# ---------------------------------------------------------------------------
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.project
+.pydevproject
+.settings/
+*.swp
+*.swo
+*~
+
+# ---------------------------------------------------------------------------
+# Tooling / agents
+# ---------------------------------------------------------------------------
+.claude/
+
+# ---------------------------------------------------------------------------
+# Logs / scratch / editor backups
+# ---------------------------------------------------------------------------
+*.log
+*.tmp
+*.bak
+*.orig
+*.rej
+
+# ---------------------------------------------------------------------------
+# OS cruft
+# ---------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+Icon
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/

@@ -1,0 +1,8 @@
+[Unit]
+Description=Update installed Factorio channels to their latest builds
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/venv/bin/fsm binary update

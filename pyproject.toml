@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "factorio-server-manager"
+version = "1.0.0"
+description = "Manager for multiple isolated Factorio headless servers under systemd user units"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE.md"]
+authors = [{ name = "Steven Crothers", email = "steven@scrothers.com" }]
+keywords = ["factorio", "game-server", "systemd", "headless", "mods"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: System Administrators",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Games/Entertainment",
+    "Topic :: System :: Systems Administration",
+]
+dependencies = ["PyYAML>=6"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "pyflakes>=3"]
+
+[project.scripts]
+fsm = "factorio_server_manager.cli:main"
+fsm-deploy = "factorio_server_manager.deploy:main"
+
+[project.urls]
+Homepage = "https://github.com/scrothers/fsm"
+Repository = "https://github.com/scrothers/fsm"
+Issues = "https://github.com/scrothers/fsm/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+factorio_server_manager = ["templates/*", "py.typed"]

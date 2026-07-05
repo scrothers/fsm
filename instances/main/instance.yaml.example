@@ -1,0 +1,35 @@
+# Minimal working starter. Copy to instance.yaml (git-ignored) and edit.
+# For every option and all defaults, see the fully-annotated reference:
+#   src/factorio_server_manager/templates/instance.yaml.example
+# or the README "Instance configuration reference" section.
+
+game_version: current            # current | stable | experimental | latest | 2.1.9
+port: 34197                      # unique UDP port per instance
+save: world.zip
+
+server_settings:
+  name: "Server Main"
+  description: "Factorio multiplayer server"
+  visibility:
+    public: true
+    lan: true
+  game_password: ""              # set locally; instance.yaml is git-ignored
+  max_players: 0
+  admins:
+    - your-factorio-username
+
+mods:
+  - name: even-distribution      # no version = track latest for the game build
+  - name: FNEI
+    version: 0.4.1               # pinned = frozen
+
+rcon:
+  port: 27015
+  password: "change-me"          # set locally; instance.yaml is git-ignored
+
+performance:
+  non_blocking_saving: true      # forked background save; avoids autosave stalls
+
+# Optional features (see the reference file above): whitelist, banlist,
+# extra_args, performance CPU/memory limits, config_ini passthrough, and map
+# generation (seed / map_gen_settings / map_settings).

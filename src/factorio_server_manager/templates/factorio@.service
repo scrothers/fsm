@@ -1,0 +1,25 @@
+[Unit]
+Description=Factorio headless server (%i)
+# Give up restarting a permanently-broken instance instead of looping forever
+# (and hammering the mod portal via ExecStartPre every RestartSec).
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+# Type=exec: start is considered successful only once the binary execs, so a
+# bad venv/script path fails fast instead of being reported as started.
+Type=exec
+WorkingDirectory=%h/instances/%i
+# Non-fatal: a mod-portal hiccup must not block server start.
+ExecStartPre=-%h/venv/bin/fsm mods update --instance %i
+ExecStart=%h/venv/bin/fsm run %i
+Restart=on-failure
+RestartSec=5
+# First run may download a large build; allow slack before start is failed.
+TimeoutStartSec=300
+# Factorio saves cleanly on SIGINT; give it room before SIGKILL.
+KillSignal=SIGINT
+TimeoutStopSec=120
+
+[Install]
+WantedBy=default.target
