@@ -94,7 +94,7 @@ def _safe_extract(tar: tarfile.TarFile, dest: Path) -> None:
         target = os.path.realpath(os.path.join(dest_root, member.name))
         if target != dest_root and not target.startswith(dest_root + os.sep):
             raise BinaryError(f"unsafe path in archive: {member.name}")
-    tar.extractall(dest)  # noqa: S202 - members validated above
+        tar.extract(member, dest)  # extracted only after its path is validated
 
 
 def install(version: str = "stable", *, make_current: bool = False) -> str:

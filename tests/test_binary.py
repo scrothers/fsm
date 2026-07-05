@@ -55,16 +55,20 @@ def test_install_is_idempotent(fhome, monkeypatch):
 
 
 class _FakeTar:
-    """Records extractall() kwargs; yields one benign member."""
+    """Records extractall() kwargs and per-member extract() calls."""
 
     def __init__(self):
         self.kwargs = None
+        self.extracted = []
 
     def getmembers(self):
         return [tarfile.TarInfo("factorio/info.json")]
 
     def extractall(self, dest, **kwargs):
         self.kwargs = kwargs
+
+    def extract(self, member, dest):
+        self.extracted.append(member.name)
 
 
 def test_safe_extract_uses_data_filter_when_available(monkeypatch, tmp_path):
@@ -73,14 +77,16 @@ def test_safe_extract_uses_data_filter_when_available(monkeypatch, tmp_path):
     tar = _FakeTar()
     binary._safe_extract(tar, tmp_path)
     assert tar.kwargs.get("filter") == "data"
+    assert tar.extracted == []  # bulk extractall, not per-member
 
 
 def test_safe_extract_falls_back_without_filter(monkeypatch, tmp_path):
-    # Python < 3.11.4 (Debian 12's 3.11.2): no data_filter -> plain extractall.
+    # Python < 3.11.4 (Debian 12's 3.11.2): validate then extract each member.
     monkeypatch.delattr(binary.tarfile, "data_filter", raising=False)
     tar = _FakeTar()
     binary._safe_extract(tar, tmp_path)
-    assert "filter" not in tar.kwargs  # plain extract, no unsupported kwarg
+    assert tar.kwargs is None  # extractall not used
+    assert tar.extracted == ["factorio/info.json"]  # per-member extract
 
 
 def test_safe_extract_rejects_traversal(fhome, monkeypatch, tmp_path):
