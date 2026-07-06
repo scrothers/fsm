@@ -4,6 +4,22 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-07-05
+
+### Security
+
+- Hardened headless-build tar extraction: the compatibility fallback (Python
+  < 3.11.4, e.g. Debian 12) now validates each member's resolved path is within
+  the destination and extracts it individually. The modern-Python `data` filter
+  path is unchanged.
+
+### Added
+
+- GitHub Releases are now created automatically on version tags, with notes from
+  this changelog and the built sdist/wheel attached.
+- Security policy (`SECURITY.md`), Dependabot version updates, and CodeQL code
+  scanning.
+
 ## [1.0.0] - 2026-07-05
 
 Initial public release.

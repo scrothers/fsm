@@ -6,4 +6,4 @@ script runs on the server; ``factorio_server_manager.deploy`` runs on a workstat
 push the source and install the unit over ssh/rsync.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"

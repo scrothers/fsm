@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "factorio-server-manager"
-version = "1.0.0"
+version = "1.0.1"
 description = "Manager for multiple isolated Factorio headless servers under systemd user units"
 readme = "README.md"
 requires-python = ">=3.11"
